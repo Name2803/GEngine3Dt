@@ -6,6 +6,10 @@ project(${PROJECT_NAME})
 
 add_executable(${PROJECT_NAME} 
 	src/main.cpp
+	render/render.h
+	render/render.cpp
+	mat/shader001.vs
+	mat/shader001.fs
 )
 
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
