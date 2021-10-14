@@ -8,8 +8,8 @@ add_executable(${PROJECT_NAME}
 	src/main.cpp
 	render/render.h
 	render/render.cpp
-	mat/shader001.vs
-	mat/shader001.fs
+	mat/fs_shader001.txt
+	mat/vs_shader001.txt
 )
 
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
