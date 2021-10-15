@@ -10,6 +10,11 @@ add_executable(${PROJECT_NAME}
 	render/render.cpp
 	mat/shader001.fs
 	mat/shader001.vs
+	mat/shader002.fs
+	mat/shader002.vs
+	texture/wall.jpg
+	texture/container.jpg
+	resources/stb_image.h
 )
 
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
@@ -25,3 +30,6 @@ target_link_libraries(${PROJECT_NAME} glfw)
 
 add_subdirectory(external/glad)
 target_link_libraries(${PROJECT_NAME} glad)
+
+add_subdirectory(external/glm)
+target_link_libraries(${PROJECT_NAME} glm)
