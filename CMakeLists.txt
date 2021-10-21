@@ -12,8 +12,14 @@ add_executable(${PROJECT_NAME}
 	mat/shader001.vs
 	mat/shader002.fs
 	mat/shader002.vs
+	mat/shader003.fs
+	mat/shader003.vs
+	mat/shader004.fs
+	mat/shader004.vs
 	texture/wall.jpg
+	texture/wall001.jpg
 	texture/container.jpg
+	texture/Cd9J.gif
 	resources/stb_image.h
 )
 
