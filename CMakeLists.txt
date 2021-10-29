@@ -19,6 +19,7 @@ add_executable(${PROJECT_NAME}
 	texture/wall.jpg
 	texture/wall001.jpg
 	texture/container.jpg
+	texture/stone.png
 	texture/Cd9J.gif
 	resources/stb_image.h
 )
