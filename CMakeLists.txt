@@ -24,6 +24,8 @@ add_executable(${PROJECT_NAME}
 	texture/2.jpg
 	texture/Cd9J.gif
 	resources/stb_image.h
+	new_class/obj1.h
+	new_class/obj1.cpp
 )
 
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
