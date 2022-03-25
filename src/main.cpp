@@ -141,16 +141,16 @@ int main()
 
 
     glm::vec3 cubePositions[] = {
-        glm::vec3(0.0f,  0.0f,  0.0f),
-        glm::vec3(2.0f,  5.0f, -15.0f),
-        glm::vec3(-1.5f, -2.2f, -2.5f),
-        glm::vec3(-3.8f, -2.0f, -12.3f),
-        glm::vec3(2.4f, -0.4f, -3.5f),
-        glm::vec3(-1.7f,  3.0f, -7.5f),
-        glm::vec3(1.3f, -2.0f, -2.5f),
-        glm::vec3(1.5f,  2.0f, -2.5f),
-        glm::vec3(1.5f,  0.2f, -1.5f),
-        glm::vec3(-1.3f,  1.0f, -1.5f)
+        glm::vec3(0.0f, 0.0f, 0.0f),
+        glm::vec3(0.0f, 0.0f, 0.0f),
+        glm::vec3(0.0f, 0.0f, 0.0f),
+        glm::vec3(0.0f, 0.0f, 0.0f),
+        glm::vec3(0.0f, 0.0f, 0.0f),
+        glm::vec3(0.0f, 0.0f, 0.0f),
+        glm::vec3(0.0f, 0.0f, 0.0f),
+        glm::vec3(0.0f, 0.0f, 0.0f),
+        glm::vec3(0.0f, 0.0f, 0.0f),
+        glm::vec3(0.0f, 0.0f, 0.0f),
     };
 
     unsigned int VBO, VAO;
@@ -227,6 +227,7 @@ int main()
 
     while (!glfwWindowShouldClose(window))
     {
+        
         // per-frame time logic
         // --------------------
         float currentFrame = static_cast<float>(glfwGetTime());
@@ -259,6 +260,12 @@ int main()
         frs.setMat4("projection", projection);
 
         // render boxes
+        cubePositions[0].z -= 0.01f;
+        for (int i = 1; i < 10; i++)
+        {
+            if(sqrt((int)(cubePositions[10 - i].z - cubePositions[10 - i - 1].z)) == 1)
+                cubePositions[10 - i] = cubePositions[10 - i - 1];
+        }
         glBindVertexArray(VAO);
         for (int i = 0; i != 10; i++)
         {
