@@ -142,15 +142,14 @@ int main()
 
     glm::vec3 cubePositions[] = {
         glm::vec3(0.0f, 0.0f, 0.0f),
+        glm::vec3(0.0f, 0.0f, 1.0f),
+        glm::vec3(0.0f, 0.0f, 2.0f),
         glm::vec3(0.0f, 0.0f, 0.0f),
+        glm::vec3(0.0f, 0.0f, 1.0f),
+        glm::vec3(0.0f, 0.0f, 2.0f),
         glm::vec3(0.0f, 0.0f, 0.0f),
-        glm::vec3(0.0f, 0.0f, 0.0f),
-        glm::vec3(0.0f, 0.0f, 0.0f),
-        glm::vec3(0.0f, 0.0f, 0.0f),
-        glm::vec3(0.0f, 0.0f, 0.0f),
-        glm::vec3(0.0f, 0.0f, 0.0f),
-        glm::vec3(0.0f, 0.0f, 0.0f),
-        glm::vec3(0.0f, 0.0f, 0.0f),
+        glm::vec3(0.0f, 0.0f, 1.0f),
+        glm::vec3(0.0f, 0.0f, 2.0f),
     };
 
     unsigned int VBO, VAO;
@@ -224,6 +223,11 @@ int main()
     //glm::mat4 projection = glm::mat4(1.0f);
     glm::mat4 scale = glm::mat4(1.0f);
 
+    auto ron = &cubePositions[0].z;
+    float temp = 0;
+    std::cout << *ron << " " << ron;
+    float nor = 1;
+
 
     while (!glfwWindowShouldClose(window))
     {
@@ -259,22 +263,50 @@ int main()
         glm::mat4 projection = glm::perspective(glm::radians(fov), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
         frs.setMat4("projection", projection);
 
-        // render boxes
-        cubePositions[0].z -= 0.01f;
-        for (int i = 1; i < 10; i++)
+        if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
         {
-            if(sqrt((int)(cubePositions[10 - i].z - cubePositions[10 - i - 1].z)) == 1)
-                cubePositions[10 - i] = cubePositions[10 - i - 1];
+            ron = &cubePositions[0].x;
+            nor = 1.0f;
         }
+        if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+        {
+            ron = &cubePositions[0].x;
+            nor = -1.0f;
+        }
+        if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+        {
+            ron = &cubePositions[0].z;
+            nor = 1.0f;
+        }
+        if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+        {
+            ron = &cubePositions[0].z;
+            nor = -1.0f;
+        }
+
+        temp += deltaTime;
+        if (temp >= 1)
+        {
+            temp = 0;
+            for (int i = 1; i < 9; i++)
+            {
+                cubePositions[9 - i] = cubePositions[9 - i - 1];
+            }
+            
+            *ron -= 1.0f * nor;
+        }
+
+        // render boxes
+        
         glBindVertexArray(VAO);
-        for (int i = 0; i != 10; i++)
+        for (int i = 0; i != 9; i++)
         {
             // calculate the model  matrix for each object and pass it to shader befor drawing
             glm::mat4 model = glm::mat4(1.0f);
             model = glm::translate(model, cubePositions[i]);
 
-            float angle = 20.0f * i;
-            model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+            /*float angle = 20.0f * i;*/
+            model = glm::rotate(model, glm::radians(0.0f), glm::vec3(1.0f, 0.3f, 0.5f));
 
             frs.setMat4("model", model);
             glDrawArrays(GL_TRIANGLES, 0, 36);
