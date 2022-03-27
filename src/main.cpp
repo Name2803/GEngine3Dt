@@ -11,6 +11,7 @@
 #include <cmath>
 #include <vector>
 #include <Windows.h>
+#include <string>
 
 #define STB_IMAGE_IMPLEMENTATION
 
@@ -33,7 +34,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 //void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
-glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+glm::vec3 cameraPos = glm::vec3(7.0f, 10.0f, 11.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
@@ -223,7 +224,21 @@ int main()
     std::cout << *ron << " " << ron;
     float nor = 1;
 
+    glm::vec3 appleCor(0.0f);
+    glm::vec3 wallCor(0.0f);
+    std::string Map[16] = {
+        "###############",
+        "#.............#",
+        "#.............#",
+        "#.............#",
+        "#.............#",
+        "#.............#",
+        "#.............#",
+        "#.............#",
+        "###############",
+    };
 
+    bool temp1 = false;
     while (!glfwWindowShouldClose(window))
     {
         
@@ -246,7 +261,7 @@ int main()
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture1);
         glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, texture2);
+        glBindTexture(GL_TEXTURE_2D, 0);
 
         // camera/view transformation
         glm::mat4 view = glm::mat4(1.0f); // 5make sure to initialize matrix to identity matrix first
@@ -278,16 +293,6 @@ int main()
             ron = &head.z;
             nor = -1.0f;
         }
-        bool temp1 = false;
-
-        if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS && temp1 == false)
-        {
-            temp1 = true;
-            int temp = cells.size();
-            cells.push_back(glm::vec3(cells[temp - 1]));
-        }
-        if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_RELEASE && temp1 == true)
-            temp1 = false;
 
         temp += deltaTime;
         if (temp >= 1)
@@ -300,6 +305,7 @@ int main()
             cells[0] = head;
             *ron -= 1.0f * nor;
         }
+
         
         // render boxes
         
@@ -321,11 +327,56 @@ int main()
             glm::mat4 model1 = glm::mat4(1.0f);
             model1 = glm::translate(model1, head);
 
-            /*float angle = 20.0f * i;*/
             model1 = glm::rotate(model1, glm::radians(0.0f), glm::vec3(1.0f, 0.3f, 0.5f));
 
             frs.setMat4("model", model1);
+            glBindTexture(GL_TEXTURE_2D, texture2);
             glDrawArrays(GL_TRIANGLES, 0, 36);
+            glBindTexture(GL_TEXTURE_2D, 0);
+
+            glm::mat4 apple = glm::mat4(1.0f);
+            if (head == appleCor)
+            {
+                appleCor = glm::vec3((float)(rand() % 13 + 1), 0.0f, (float)(rand() % 7 + 1));
+                int temp = cells.size();
+                cells.push_back(glm::vec3(cells[temp - 1]));
+            }
+            apple = glm::translate(apple, appleCor);
+
+            apple = glm::rotate(apple, glm::radians(0.0f), glm::vec3(1.0f, 0.3f, 0.5f));
+            apple = glm::scale(apple, glm::vec3(0.7f));
+            frs.setMat4("model", apple);
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, 0);
+            glActiveTexture(GL_TEXTURE1);
+            glBindTexture(GL_TEXTURE_2D, texture2);
+            glDrawArrays(GL_TRIANGLES, 0, 36); 
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, texture1);
+            glActiveTexture(GL_TEXTURE1);
+            glBindTexture(GL_TEXTURE_2D, 0);
+
+            for (int i = 0; i < 9; i++)
+            {
+                for (int j = 0; j < 15; j++)
+                {
+                    if (Map[i][j] == '#')
+                    {
+                        glm::mat4 map1 = glm::mat4(1.0f);
+                        map1 = glm::translate(map1, glm::vec3((float)j, 0.0f, (float)i));
+                        map1 = glm::rotate(map1, glm::radians(0.0f), glm::vec3(1.0f, 0.3f, 1.0f));
+                        map1 = glm::scale(map1, glm::vec3(1.0f, 0.5f, 1.0f));
+                        frs.setMat4("model", map1);
+                        glDrawArrays(GL_TRIANGLES, 0, 36);
+                    }
+                    else
+                    {
+
+                    }
+                }
+            }
+            
+
         }
        
        
@@ -347,7 +398,7 @@ void processInput(GLFWwindow* window)
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
-    float cameraSpeed = static_cast<float>(2.5 * deltaTime);
+    float cameraSpeed = static_cast<float>(5 * deltaTime);
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         cameraPos += cameraSpeed * cameraFront;
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
