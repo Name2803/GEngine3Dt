@@ -6,26 +6,17 @@ project(${PROJECT_NAME})
 
 add_executable(${PROJECT_NAME} 
 	src/main.cpp
-	render/render.h
-	render/render.cpp
-	mat/shader001.fs
-	mat/shader001.vs
-	mat/shader002.fs
-	mat/shader002.vs
-	mat/shader003.fs
-	mat/shader003.vs
-	mat/shader004.fs
-	mat/shader004.vs
-	texture/wall.jpg
-	texture/wall001.jpg
-	texture/container.jpg
-	texture/stone.png
-	texture/Untitled.png
-	texture/2.jpg
-	texture/Cd9J.gif
-	resources/stb_image.h
-	new_class/obj1.h
-	new_class/obj1.cpp
+	shaders/ShaderCl.h
+	shaders/ShaderCl.cpp
+	glslCode/1_colors.fs
+	glslCode/1_colors.vs
+	glslCode/1_light_cube.fs
+	glslCode/1_light_cube.vs
+	glslCode/vShader.txt
+	glslCode/fShader.txt
+	external/stb_image.h
+	atomCube/atomCube.h
+	atomCube/atomCube.cpp
 )
 
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)

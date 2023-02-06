@@ -1,0 +1,22 @@
+#version 330 core
+out vec4 FragColor;
+in vec3 ourColor;
+in vec2 TexCoord;
+
+uniform vec4 LightColor;
+uniform sampler2D Texture;
+uniform sampler2D Texture2;
+
+void main()
+{
+	
+	##FragColor = vec4( texture(Texture, TexCoord).x * (0.2f / (1.0f  / (texture(Texture, TexCoord).x + texture(Texture, TexCoord).y + texture(Texture, TexCoord).z))),
+	##texture(Texture, TexCoord).y * (0.2f / (1.0f  / (texture(Texture, TexCoord).x + texture(Texture, TexCoord).y + texture(Texture, TexCoord).z))),
+	##texture(Texture, TexCoord).z * (0.2f / (1.0f  / (texture(Texture, TexCoord).x + texture(Texture, TexCoord).y + texture(Texture, TexCoord).z))), 1.0f) * LightColor;
+	##FragColor = LightColor * mix(texture(Texture, TexCoord), vec4(texture(Texture , TexCoord + 0.5f).x, texture(Texture2 , TexCoord - 0.2f).y, texture(Texture2 , TexCoord).z, 1.0f), texture(Texture2, TexCoord).w);
+	##FragColor = mix(texture(Texture, TexCoord), texture(Texture2, TexCoord), 
+	##(texture(Texture2, TexCoord).x + texture(Texture2, TexCoord).y +texture(Texture2, TexCoord).z) / 2.0f);
+
+
+	FragColor = mix(texture(Texture2, TexCoord),texture(Texture2, TexCoord), 0.9) * LightColor;
+}

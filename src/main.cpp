@@ -1,54 +1,34 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-
-
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "../render/render.h"
 #include <iostream>
 #include <cmath>
-#include <vector>
-#include <Windows.h>
-#include <string>
+
+
+#include "../shaders/ShaderCl.h"
+
 
 #define STB_IMAGE_IMPLEMENTATION
-
-#include "../resources/stb_image.h"
-
-float asa = 0.0;
-float asax = 0.0;
-float asay = 0.0;
-float asaz = 0.0;
+#include "../external/stb_image.h"
 
 
 
-//std::vector
-
-unsigned int SCR_WIDTH = 800;
-unsigned int SCR_HEIGHT = 600;
-
-void processInput(GLFWwindow* window);
+void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
-//void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+void processInput(GLFWwindow* window);
 
-glm::vec3 cameraPos = glm::vec3(7.0f, 10.0f, 11.0f);
+// settings
+const unsigned int SCR_WIDTH = 800;
+const unsigned int SCR_HEIGHT = 600;
+
+// camera
+glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-
-// timing
-float deltaTime = 0.0f;	// time between current frame and last frame
-float lastFrame = 0.0f;
-
-void glfwWindowSizeCallback(GLFWwindow* window, int width, int height)
-{
-    SCR_WIDTH = width;
-    SCR_HEIGHT = height;
-    glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
-}
-
 
 bool firstMouse = true;
 float yaw = -90.0f;	// yaw is initialized to -90.0 degrees since a yaw of 0.0 results in a direction vector pointing to the right so we initially rotate a bit to the left.
@@ -58,9 +38,15 @@ float lastY = 600.0 / 2.0;
 float fov = 45.0f;
 
 
+// timing
+float deltaTime = 0.0f;	// time between current frame and last frame
+float lastFrame = 0.0f;
+
+
 int main()
 {
-    
+    // glfw: initialize and configure
+    // ------------------------------
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -69,8 +55,10 @@ int main()
 #ifdef __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
-    
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
+
+    // glfw window creation
+    // --------------------
+    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "HiCore", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -78,124 +66,148 @@ int main()
         return -1;
     }
     glfwMakeContextCurrent(window);
-    glfwSetWindowSizeCallback(window, glfwWindowSizeCallback);
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback);
 
     // tell GLFW to capture our mouse
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    
+
+    // glad: load all OpenGL function pointers
+    // ---------------------------------------
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
 
-    glEnable(GL_DEPTH_TEST);
+    // build and compile our shader program
+    // ------------------------------------
+    // vertex shader
+    Shader lightningShader("../glslCode/1_colors.vs", "../glslCode/1_colors.fs");
+    Shader lightCubeShader("../glslCode/1_light_cube.vs", "../glslCode/1_light_cube.fs");
 
-    class Shader::Shader frs("../mat/shader004.vs", "../mat/shader004.fs", nullptr);
-    class Shader::Shader frs2("../mat/shader004.vs", "../mat/shader004.fs", nullptr);
-    
+    // set up vertex data (and buffer(s)) and configure vertex attributes
+   // ------------------------------------------------------------------
     float vertices[] = {
-    -0.5f, -0.5f, -0.5f,  0.1f, 0.1f,
-     0.5f, -0.5f, -0.5f,  0.4f, 0.1f,
-     0.5f,  0.5f, -0.5f,  0.4f, 0.4f,
-     0.5f,  0.5f, -0.5f,  0.4f, 0.4f,
-    -0.5f,  0.5f, -0.5f,  0.1f, 0.4f,
-    -0.5f, -0.5f, -0.5f,  0.1f, 0.1f,
-
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-     0.5f, -0.5f,  0.5f,  3.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,  3.0f, 3.0f,
-     0.5f,  0.5f,  0.5f,  3.0f, 3.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f, 3.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-
-    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-    -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-     0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-     0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-
-    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 0.0f, 0.5f, 0.1f,
+         0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 0.0f, 0.5f, 0.1f,
+         0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 0.0f, 0.5f, 0.1f,
+         0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 0.0f, 0.5f, 0.1f,
+        -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 0.0f, 0.5f, 0.1f,
+        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 0.0f, 0.5f, 0.1f,
+                                                               
+        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f, 0.0f, 0.5f, 0.1f,
+         0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f, 0.0f, 0.5f, 0.1f,
+         0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f, 0.0f, 0.5f, 0.1f,
+         0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f, 0.0f, 0.5f, 0.1f,
+        -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f, 0.0f, 0.5f, 0.1f,
+        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f, 0.0f, 0.5f, 0.1f,
+                                                               
+        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f, 0.0f, 0.5f, 0.1f,
+        -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f, 0.0f, 0.5f, 0.1f,
+        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f, 0.0f, 0.5f, 0.1f,
+        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f, 0.0f, 0.5f, 0.1f,
+        -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f, 0.0f, 0.5f, 0.1f,
+        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f, 0.0f, 0.5f, 0.1f,
+                                                               
+         0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f, 0.0f, 0.5f, 0.1f,
+         0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f, 0.0f, 0.5f, 0.1f,
+         0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f, 0.0f, 0.5f, 0.1f,
+         0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f, 0.0f, 0.5f, 0.1f,
+         0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f, 0.0f, 0.5f, 0.1f,
+         0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f, 0.0f, 0.5f, 0.1f,
+                                                               
+        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f, 0.0f, 0.5f, 0.1f,
+         0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f, 0.0f, 0.5f, 0.1f,
+         0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f, 0.0f, 0.5f, 0.1f,
+         0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f, 0.0f, 0.5f, 0.1f,
+        -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f, 0.0f, 0.5f, 0.1f,
+        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f, 0.0f, 0.5f, 0.1f,
+                                                               
+        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f, 0.0f, 0.5f, 0.1f,
+         0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f, 0.0f, 0.5f, 0.1f,
+         0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f, 0.0f, 0.5f, 0.1f,
+         0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f, 0.0f, 0.5f, 0.1f,
+        -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f, 0.0f, 0.5f, 0.1f,
+        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f, 0.0f, 0.5f, 0.1f
     };
 
 
-    glm::vec3 head(0.0f, 0.0f, 1.0f);
-    std::vector <glm::vec3> cells{
-        glm::vec3(0.0f, 0.0f, 1.0f),
-        glm::vec3(0.0f, 0.0f, 2.0f),
-        glm::vec3(0.0f, 0.0f, 3.0f),
-    };
-
-    unsigned int VBO, VAO;
-    glGenVertexArrays(1, &VAO);
+    unsigned int VBO, cubeVAO, EBO;
+    glGenVertexArrays(1, &cubeVAO);
     glGenBuffers(1, &VBO);
-
-    glBindVertexArray(VAO);
+    glGenBuffers(1, &EBO);
+    // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
+    glBindVertexArray(cubeVAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-
     // position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    // color attribute
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(6 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+    //// texture coord attribute
+    //glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+    //glEnableVertexAttribArray(2);
+
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(3);
+
+    unsigned int lightCubeVAO;
+    glGenVertexArrays(1, &lightCubeVAO);
+    glBindVertexArray(lightCubeVAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    // position attribute
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
-    // texture coord attribute
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
 
-    
-    unsigned int texture1, texture2;
-   
-    glGenTextures(1, &texture1);
-    glBindTexture(GL_TEXTURE_2D, texture1);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    stbi_set_flip_vertically_on_load(true);
+
+
+    unsigned int texture, texture2;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    // set the texture wrapping parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    // set texture filtering parameters
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    // load image, create texture and generate mipmaps
     int width, height, nrChannels;
-    unsigned char* data = stbi_load("../texture/container.jpg", &width, &height, &nrChannels, 0);
+    stbi_set_flip_vertically_on_load(true); // tell stb_image.h to flip loaded texture's on the y-axis.
+    // The FileSystem::getPath(...) is part of the GitHub repository so we can find files on any IDE/platform; replace it with your own image path.
+    unsigned char* data = stbi_load("../texture/grass.png", &width, &height, &nrChannels, 0);
     if (data)
     {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
     }
     else
     {
         std::cout << "Failed to load texture" << std::endl;
     }
-
     stbi_image_free(data);
+    // texture 2
+    // ---------
     glGenTextures(1, &texture2);
     glBindTexture(GL_TEXTURE_2D, texture2);
+    // set the texture wrapping parameters
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     // set texture filtering parameters
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    //show to how to use png
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    // load image, create texture and generate mipmaps
     data = stbi_load("../texture/awesomeface.png", &width, &height, &nrChannels, 0);
     if (data)
     {
@@ -208,197 +220,127 @@ int main()
         std::cout << "Failed to load texture" << std::endl;
     }
     stbi_image_free(data);
-    
-    frs.use();
-    frs.setInt("texture1", 0);
-    frs.setInt("texture2", 1);
 
-    // -----------
-    glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
-    glm::mat4 view = glm::mat4(1.0f);
-    //glm::mat4 projection = glm::mat4(1.0f);
-    glm::mat4 scale = glm::mat4(1.0f);
 
-    auto ron = &head.z;
-    float temp = 0;
-    std::cout << *ron << " " << ron;
-    float nor = 1;
+    // either set it manually like so:
+    glUniform1i(glGetUniformLocation(lightningShader.ID, "Texture"), 0);
+    // or set it via the texture class
+    lightningShader.setInt("Texture2", 1);
+    glBindVertexArray(cubeVAO);
 
-    glm::vec3 appleCor(0.0f);
-    glm::vec3 wallCor(0.0f);
-    std::string Map[16] = {
-        "###############",
-        "#.............#",
-        "#.............#",
-        "#.............#",
-        "#.............#",
-        "#.............#",
-        "#.............#",
-        "#.............#",
-        "###############",
-    };
+    glm::vec3  lightPos = glm::vec3(2.5f, 0.0f, -3.8f);
 
-    bool temp1 = false;
+    glm::vec3  lightPos2 = glm::vec3(2.0f, 0.0f, -3.8f);
+
+    glEnable(GL_DEPTH_TEST);
     while (!glfwWindowShouldClose(window))
     {
-        
+
         // per-frame time logic
         // --------------------
         float currentFrame = static_cast<float>(glfwGetTime());
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
-        // input
-        // -----
-        processInput(window);
 
-        // render
-        // ------
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        processInput(window);
+        glClearColor(0.2f, 0.2f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // bind textures on corresponding texture units
+        lightningShader.use();
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture1);
+        glBindTexture(GL_TEXTURE_2D, texture);
         glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, 0);
+        glBindTexture(GL_TEXTURE_2D, texture2);
+
+        lightningShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
+        lightningShader.setVec3("lightPos", lightPos);
+        lightningShader.setVec3("viewPos", glm::vec3(0.0f, 0.0f, 0.0f));
 
         // camera/view transformation
-        glm::mat4 view = glm::mat4(1.0f); // 5make sure to initialize matrix to identity matrix first
-        view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-        frs.setMat4("view", view);
+        glm::mat4 vaew = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
-        frs.use();
 
-        glm::mat4 projection = glm::perspective(glm::radians(fov), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-        frs.setMat4("projection", projection);
 
-        if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-        {
-            ron = &head.x;
-            nor = 1.0f;
-        }
-        if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-        {
-            ron = &head.x;
-            nor = -1.0f;
-        }
-        if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-        {
-            ron = &head.z;
-            nor = 1.0f;
-        }
-        if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-        {
-            ron = &head.z;
-            nor = -1.0f;
-        }
+        glm::mat4 model = glm::mat4(1.0f);
 
-        temp += deltaTime;
-        if (temp >= 1)
-        {
-            temp = 0;
-            for (int i = 1; i < cells.size(); i++)
-            {
-                cells[cells.size() - i] = cells[cells.size() - i - 1];
-            }
-            cells[0] = head;
-            *ron -= 1.0f * nor;
-        }
+        glm::mat4 projection = glm::mat4(1.0f);
+        projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        //model = glm::translate(model, glm::vec3((float)(lightPos.x + cos(glfwGetTime()) * 5), 0.0f, (float)(lightPos.z + sin(glfwGetTime()) * 5)));
+        model = glm::translate(model, glm::vec3(0.0f, 0.0f, 2.0f));
+        //model = glm::rotate(model, glm::radians((float)(glfwGetTime() * 100)), glm::vec3(0.0f, 1.0f, 0.0f));
+        // pass transformation matrices to the shader
+        lightningShader.setMat4("projection", projection);
+        lightningShader.setMat4("view", vaew);
+        lightningShader.setMat4("model", model);
 
-        
         // render boxes
-        
-        glBindVertexArray(VAO);
-        for (int i = 0; i != cells.size(); i++)
-        {
-            // Cells
-            // calculate the model  matrix for each object and pass it to shader befor drawing
-            glm::mat4 model = glm::mat4(1.0f);
-            model = glm::translate(model, cells[i]);
+        glBindVertexArray(cubeVAO);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
 
-            /*float angle = 20.0f * i;*/
-            model = glm::rotate(model, glm::radians(0.0f), glm::vec3(1.0f, 0.3f, 0.5f));
+        // also draw the lamp object
+        lightCubeShader.use();
+        lightCubeShader.setMat4("projection", projection);
+        lightCubeShader.setMat4("view", vaew);
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, lightPos);
+        model = glm::scale(model, glm::vec3(1.0f)); // a smaller cube
+        lightCubeShader.setMat4("model", model);
 
-            frs.setMat4("model", model);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
+        glBindVertexArray(lightCubeVAO);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
 
-            // Head
-            glm::mat4 model1 = glm::mat4(1.0f);
-            model1 = glm::translate(model1, head);
+        // also draw the lamp object
+        lightCubeShader.use();
+        lightCubeShader.setMat4("projection", projection);
+        lightCubeShader.setMat4("view", glm::mat4(1.0f));
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, lightPos2);
+        model = glm::scale(model, glm::vec3(1.0f)); // a smaller cube
+        lightCubeShader.setMat4("model", model);
 
-            model1 = glm::rotate(model1, glm::radians(0.0f), glm::vec3(1.0f, 0.3f, 0.5f));
+        glBindVertexArray(lightCubeVAO);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
 
-            frs.setMat4("model", model1);
-            glBindTexture(GL_TEXTURE_2D, texture2);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-            glBindTexture(GL_TEXTURE_2D, 0);
+        lightningShader.use();
+        //projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        model = glm::translate(model, glm::vec3(2.0 * sin(glfwGetTime()), 1.0f, -2.0f));
+        model = glm::scale(model, glm::vec3(2.0 * sin(glfwGetTime()), 2.0 * cos(glfwGetTime()), 2.0 * cos(glfwGetTime())));
+        //model = glm::rotate(model, glm::radians((float)(glfwGetTime() * 100)), glm::vec3(0.0f, 1.0f, 0.0f));
+        // pass transformation matrices to the shader
+        lightningShader.setMat4("projection", projection);
+        lightningShader.setMat4("view", vaew);
+        lightningShader.setMat4("model", model);
 
-            glm::mat4 apple = glm::mat4(1.0f);
-            if (head == appleCor)
-            {
-                appleCor = glm::vec3((float)(rand() % 13 + 1), 0.0f, (float)(rand() % 7 + 1));
-                int temp = cells.size();
-                cells.push_back(glm::vec3(cells[temp - 1]));
-            }
-            apple = glm::translate(apple, appleCor);
+        glBindVertexArray(cubeVAO);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
 
-            apple = glm::rotate(apple, glm::radians(0.0f), glm::vec3(1.0f, 0.3f, 0.5f));
-            apple = glm::scale(apple, glm::vec3(0.7f));
-            frs.setMat4("model", apple);
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, 0);
-            glActiveTexture(GL_TEXTURE1);
-            glBindTexture(GL_TEXTURE_2D, texture2);
-            glDrawArrays(GL_TRIANGLES, 0, 36); 
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, texture1);
-            glActiveTexture(GL_TEXTURE1);
-            glBindTexture(GL_TEXTURE_2D, 0);
-
-            for (int i = 0; i < 9; i++)
-            {
-                for (int j = 0; j < 15; j++)
-                {
-                    if (Map[i][j] == '#')
-                    {
-                        glm::mat4 map1 = glm::mat4(1.0f);
-                        map1 = glm::translate(map1, glm::vec3((float)j, 0.0f, (float)i));
-                        map1 = glm::rotate(map1, glm::radians(0.0f), glm::vec3(1.0f, 0.3f, 1.0f));
-                        map1 = glm::scale(map1, glm::vec3(1.0f, 0.5f, 1.0f));
-                        frs.setMat4("model", map1);
-                        glDrawArrays(GL_TRIANGLES, 0, 36);
-                    }
-                    else
-                    {
-
-                    }
-                }
-            }
-            
-
-        }
-       
-       
-
-
+        // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
+        // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
 
-    glDeleteVertexArrays(1, &VAO);
+    // optional: de-allocate all resources once they've outlived their purpose:
+    // ------------------------------------------------------------------------
+    glDeleteVertexArrays(1, &cubeVAO);
+    glDeleteVertexArrays(1, &lightCubeVAO);
     glDeleteBuffers(1, &VBO);
+
+    // glfw: terminate, clearing all previously allocated GLFW resources.
+    // ------------------------------------------------------------------
     glfwTerminate();
     return 0;
 }
 
-
+// process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
+// ---------------------------------------------------------------------------------------------------------
 void processInput(GLFWwindow* window)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
-    float cameraSpeed = static_cast<float>(5 * deltaTime);
+    float cameraSpeed = static_cast<float>(2.5 * deltaTime);
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         cameraPos += cameraSpeed * cameraFront;
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
@@ -407,14 +349,22 @@ void processInput(GLFWwindow* window)
         cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
-    // Fullscreen
-    /*if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
-    {
-        window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", glfwGetPrimaryMonitor(), NULL);
-    }*/
 }
-void mouse_callback(GLFWwindow* window, double xpos, double ypos)
+
+// glfw: whenever the window size changed (by OS or user resize) this callback function executes
+// ---------------------------------------------------------------------------------------------
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
+    // make sure the viewport matches the new window dimensions; note that width and 
+    // height will be significantly larger than specified on retina displays.
+    glViewport(0, 0, width, height);
+}
+
+void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
+{
+    float xpos = static_cast<float>(xposIn);
+    float ypos = static_cast<float>(yposIn);
+
     if (firstMouse)
     {
         lastX = xpos;
@@ -423,27 +373,28 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
     }
 
     float xoffset = xpos - lastX;
-    float yoffset = lastY - ypos;
+    float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
     lastX = xpos;
     lastY = ypos;
 
-    float sensitivity = 0.1f;
+    float sensitivity = 0.1f; // change this value to your liking
     xoffset *= sensitivity;
     yoffset *= sensitivity;
 
     yaw += xoffset;
     pitch += yoffset;
 
+    // make sure that when pitch is out of bounds, screen doesn't get flipped
     if (pitch > 89.0f)
         pitch = 89.0f;
     if (pitch < -89.0f)
         pitch = -89.0f;
 
-    glm::vec3 direction;
-    direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-    direction.y = sin(glm::radians(pitch));
-    direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-    cameraFront = glm::normalize(direction);
+    glm::vec3 front;
+    front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+    front.y = sin(glm::radians(pitch));
+    front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+    cameraFront = glm::normalize(front);
 }
 
 // glfw: whenever the mouse scroll wheel scrolls, this callback is called
