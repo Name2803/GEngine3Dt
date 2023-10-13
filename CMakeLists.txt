@@ -6,17 +6,22 @@ project(${PROJECT_NAME})
 
 add_executable(${PROJECT_NAME} 
 	src/main.cpp
-	shaders/ShaderCl.h
-	shaders/ShaderCl.cpp
-	glslCode/1_colors.fs
-	glslCode/1_colors.vs
-	glslCode/1_light_cube.fs
-	glslCode/1_light_cube.vs
-	glslCode/vShader.txt
-	glslCode/fShader.txt
-	external/stb_image.h
-	atomCube/atomCube.h
-	atomCube/atomCube.cpp
+	src/window/window.h
+	src/window/window.cpp
+	src/window/Events.h
+	src/window/Events.cpp
+	src/window/Camera.h
+	src/window/Camera.cpp
+	src/graphics/ShaderCl.h
+	src/graphics/ShaderCl.cpp
+	src/graphics/Texture.h
+	src/graphics/Texture.cpp
+	src/shaders/ShV1.fs
+	src/shaders/ShV1.vs
+	src/shaders/Shader_1.fs
+	src/shaders/Shader_1.vs
+	src/shaders/LightCubeShader_1.fs
+	src/shaders/LightCubeShader_1.vs
 )
 
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
