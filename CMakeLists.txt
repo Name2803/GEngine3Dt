@@ -16,10 +16,22 @@ add_executable(${PROJECT_NAME}
 	src/graphics/ShaderCl.cpp
 	src/graphics/Texture.h
 	src/graphics/Texture.cpp
+	src/graphics/marching_cube_renderer.h
+	src/graphics/marching_cube_renderer.cpp
 	src/shaders/ShV1.fs
 	src/shaders/ShV1.vs
 	src/shaders/Shader_1.fs
 	src/shaders/Shader_1.vs
+	src/mesh/Mesh.h
+	src/mesh/Mesh.cpp
+	src/marching_cubes/marching_cubes.h
+	src/marching_cubes/marching_cubes.cpp
+	src/marching_cubes/chunk.h
+	src/marching_cubes/chunk.cpp
+	src/marching_cubes/chunks.h
+	src/marching_cubes/chunks.cpp
+	src/helper_function/helper_function.h
+	src/helper_function/helper_function.cpp
 	src/shaders/LightCubeShader_1.fs
 	src/shaders/LightCubeShader_1.vs
 )
