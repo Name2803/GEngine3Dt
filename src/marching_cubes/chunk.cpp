@@ -21,14 +21,14 @@ Chunk::Chunk(int xpos, int ypos, int zpos, Chunks* chunks, int temp):
 					int real_x = x + xpos * CHUNK_W;
 					int real_z = z + zpos * CHUNK_D;
 					int real_y = y + ypos * CHUNK_H;
-					float height = glm::perlin(glm::vec3(real_x * 0.05f, real_z * 0.05f, real_y * 0.05f)) * 10;
+					float height = glm::perlin(glm::vec3(real_x * 0.07f, real_z * 0.07f, real_y * 0.07f)) * 10 + 5;
 
 					if (y < height) continue;
 				}
 				else {
 					if (y < (sin(x * 0.6) * 0.5 + 0.5) * 3.0f && y < (sin(z * 0.6) * 0.5 + 0.5) * 3.0f) continue;
 				}
-				//---------------------------------------------------------------------------
+				//--------------------------------------------------------------------------- v.1
 				if (x != 0) {
 					if (z != 0) {
 						if (y != 0) {

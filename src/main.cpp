@@ -72,22 +72,6 @@ int main()
     glUseProgram(NULL);
 
         
-
-
-    // world space positions of our cubes
-    glm::vec3 cubePositions[] = {
-        glm::vec3(0.0f,  0.0f,  0.0f),
-        glm::vec3(2.0f,  5.0f, -15.0f),
-        glm::vec3(-1.5f, -2.2f, -2.5f),
-        glm::vec3(-3.8f, -2.0f, -12.3f),
-        glm::vec3(2.4f, -0.4f, -3.5f),
-        glm::vec3(-1.7f,  3.0f, -7.5f),
-        glm::vec3(1.3f, -2.0f, -2.5f),
-        glm::vec3(1.5f,  2.0f, -2.5f),
-        glm::vec3(1.5f,  0.2f, -1.5f),
-        glm::vec3(-1.3f,  1.0f, -1.5f)
-    };
-
     // positions of the point lights
     glm::vec3 pointLightPositions[] = {
         glm::vec3(0.7f,  0.2f,  2.0f),
@@ -95,18 +79,6 @@ int main()
         glm::vec3(-4.0f,  2.0f, -12.0f),
         glm::vec3(0.0f,  0.0f, -3.0f)
     };
-
-    /*int amount;
-    float* verttices = Helper_function::ver_for_mc(amount, 36);
-    int amount_2;
-    float* verttices_2 = Helper_function::ver_for_mc(amount_2, 72);*/
-
-    /*for (int i = 0; i < amount; i++) {
-        std::cout << verttices[3 * i] << "\t" << verttices[3 * i + 1] << "\t" << verttices[3 * i + 2] << "\n";
-    }*/
-    //return 0;
-
-
 
     int attrs[] = { 3, 2, 3, 0 };
       
@@ -315,30 +287,6 @@ int main()
 
                 }
             }
-
-
-
-            //lightCubeShader.use();
-            //lightCubeShader.setMat4("projection", projection); // note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
-            //lightCubeShader.setMat4("view", view);
-            //for (unsigned int i = 0; i < 4; i++)
-            //{
-            //    glm::mat4 model = glm::mat4(1.0f);
-            //    model = glm::translate(model, pointLightPositions[i]);
-            //    model = glm::scale(model, glm::vec3(0.2f)); // Make it a smaller cube
-
-            //    lightCubeShader.setMat4("model", model);
-
-            //    // bind diffuse map
-            //    glActiveTexture(GL_TEXTURE0);
-            //    glBindTexture(GL_TEXTURE_2D, lightCubeTexture.id);
-
-            //    glBindVertexArray(lightCubeVAO);
-            //    glDrawArrays(GL_TRIANGLES, 0, 36);
-            //}
-            // pass transformation matrices to the shader
-
-
         }
         Window::swapBuffers();
         Events::pullEvents();
