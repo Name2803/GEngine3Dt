@@ -11,6 +11,7 @@ public:
 	size_t volume;
 	unsigned int w, h, d;
 
+
 	Chunks(int w, int h, int d);
 	~Chunks();
 };

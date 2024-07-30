@@ -7,15 +7,57 @@
 
 class Marching_cubes;
 class Chunks;
+class Shader;
 
 class Chunk {
-	int amount = CHUNK_VOL;
 public:
 	int getAmount() { return amount; }
-	int x, y, z;
-	Marching_cubes* marching_cubes;
+	int xpos, ypos, zpos;
+    int index;
+    bool shouldToDraw;
+    Marching_cubes* marching_cubes;
+
+
 
 
 	Chunk( int xpos, int ypos, int zpos, Chunks* chunks, int temp);
 	~Chunk();
+
+    int ChunkBoxDrawer(Shader& chunkBoxShader);
+
+private:
+    int amount = CHUNK_VOL;
+
+    const float l_cube_vert[144] = {
+        //vertices      //color
+          0.f, 0.f, 0.f,  1.f, 1.f, 1.f,
+          0.f, 0.f, 1.f,  0.f, 1.f, 0.f,
+          0.f, 0.f, 1.f,  0.f, 1.f, 0.f,
+          1.f, 0.f, 1.f,  0.f, 1.f, 1.f,
+
+          1.f, 0.f, 1.f,  0.f, 1.f, 1.f,
+          1.f, 0.f, 0.f,  0.f, 0.f, 1.f,
+          1.f, 0.f, 0.f,  0.f, 0.f, 1.f,
+          0.f, 0.f, 0.f,  1.f, 1.f, 1.f,
+
+          0.f, 0.f, 0.f,  1.f, 1.f, 1.f,
+          0.f, 1.f, 0.f,  1.f, 0.f, 0.f,
+          0.f, 1.f, 0.f,  1.f, 0.f, 0.f,
+          0.f, 1.f, 1.f,  1.f, 1.f, 0.f,
+
+          0.f, 0.f, 1.f,  0.f, 1.f, 0.f,
+          0.f, 1.f, 1.f,  1.f, 1.f, 0.f,
+          0.f, 1.f, 1.f,  1.f, 1.f, 0.f,
+          1.f, 1.f, 1.f,  1.f, 1.f, 1.f,
+
+          1.f, 0.f, 1.f,  0.f, 1.f, 1.f,
+          1.f, 1.f, 1.f,  1.f, 1.f, 1.f,
+          1.f, 1.f, 1.f,  1.f, 1.f, 1.f,
+          1.f, 1.f, 0.f,  1.f, 0.f, 1.f,
+
+          1.f, 0.f, 0.f,  0.f, 0.f, 1.f,
+          1.f, 1.f, 0.f,  1.f, 0.f, 1.f,
+          1.f, 1.f, 0.f,  1.f, 0.f, 1.f,
+          0.f, 1.f, 0.f,  1.f, 0.f, 0.f
+    };
 };

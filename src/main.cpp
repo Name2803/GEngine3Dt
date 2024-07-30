@@ -48,12 +48,14 @@ int main()
 
     Window::initialize(WIDTH, HEIGHT, "Hi_player)");
     Events::initialize();
-    Camera* camera = new Camera(vec3(0., 5.f, 0.), radians(90.0f));
+    Camera* camera = new Camera(vec3(12., 5.f, 10.), radians(90.0f));
 
 
     Shader first("../src/shaders/Shader_1.vs", "../src/shaders/Shader_1.fs");
     Shader lightCubeShader("../src/shaders/LightCubeShader_1.vs", "../src/shaders/LightCubeShader_1.fs");
     Shader for_lines("../src/shaders/ShV1.vs", "../src/shaders/ShV1.fs");
+    
+
     
     first.use();
     Texture diffuseMap("../data/picturs/container_diffuse.png");
@@ -71,6 +73,8 @@ int main()
     lightCubeShader.setInt("texture1", 0);
     glUseProgram(NULL);
 
+
+    Shader chunkbox_shader("../res/main_line_shader.vs", "../res/main_line_shader.fs");
         
     // positions of the point lights
     glm::vec3 pointLightPositions[] = {
@@ -83,7 +87,7 @@ int main()
     int attrs[] = { 3, 2, 3, 0 };
       
 
-    Chunks* chunks = new Chunks(4, 1, 4);
+    Chunks* chunks = new Chunks(4, 4, 4);
     Mesh** meshes = new Mesh * [chunks->volume];
     MarchingCubeRenderer renderer(5 * CHUNK_VOL, attrs);
     for (size_t i = 0; i < chunks->volume; i++) {
@@ -92,7 +96,9 @@ int main()
 
 
     glEnable(GL_DEPTH_TEST);
-
+    glEnable(GL_CULL_FACE);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     float lastFrame = static_cast<float>(glfwGetTime());
     float deltaTime;
@@ -149,6 +155,14 @@ int main()
 
         if (Events::jpressed(GLFW_KEY_TAB)) {
             Events::toogleCursor();
+        }
+
+        if (Events::jpressed(GLFW_KEY_G)) {
+            for (int i = 0; i < chunks->volume; i++)
+            {
+                //chunks->chunks[i]->ChunkBoxDrawer();
+                chunks->chunks[i]->shouldToDraw = !chunks->chunks[i]->shouldToDraw;
+            }
         }
 
         camera->rotate(-Events::deltaY / Window::width, -Events::deltaX / Window::height, 0);
@@ -279,9 +293,14 @@ int main()
 
                         first.use();
                         model228 = mat4(1.0f);
-                        model228 = glm::translate(model228, vec3(chunk->x * CHUNK_W, chunk->y * CHUNK_H, chunk->z * CHUNK_D));
+                        model228 = glm::translate(model228, vec3(chunk->xpos * CHUNK_W, chunk->ypos * CHUNK_H, chunk->zpos * CHUNK_D));
                         first.setMat4("model", model228);
                         meshes[i]->draw(GL_TRIANGLES);
+
+                        chunkbox_shader.use();
+                        chunkbox_shader.setMat4("projection", projection); // note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
+                        chunkbox_shader.setMat4("view", view);
+                        chunks->chunks[i]->ChunkBoxDrawer(chunkbox_shader);
                     }
 
 
