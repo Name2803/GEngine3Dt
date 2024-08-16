@@ -479,7 +479,10 @@ Chunk::Chunk(int xpos, int ypos, int zpos, Chunks* chunks, int temp):
 				//---------------------------------------------------------------------------
 				
 
-
+				if (!marching_cubes[CHUNK_W * (CHUNK_D * y + z) + x].mc_ind)
+				{
+					marching_cubes[CHUNK_W * (CHUNK_D * y + z) + x].textureID = 1;
+				}
 			}
 		}
 	}

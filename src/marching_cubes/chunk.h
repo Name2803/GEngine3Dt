@@ -14,6 +14,7 @@ public:
 	int getAmount() { return amount; }
 	int xpos, ypos, zpos;
     int index;
+    bool modified = true;
     bool shouldToDraw;
     Marching_cubes* marching_cubes;
 

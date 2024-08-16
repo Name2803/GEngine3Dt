@@ -18,10 +18,7 @@ add_executable(${PROJECT_NAME}
 	src/graphics/Texture.cpp
 	src/graphics/marching_cube_renderer.h
 	src/graphics/marching_cube_renderer.cpp
-	src/shaders/ShV1.fs
-	src/shaders/ShV1.vs
-	src/shaders/Shader_1.fs
-	src/shaders/Shader_1.vs
+
 	src/mesh/Mesh.h
 	src/mesh/Mesh.cpp
 	src/marching_cubes/marching_cubes.h
@@ -32,8 +29,9 @@ add_executable(${PROJECT_NAME}
 	src/marching_cubes/chunks.cpp
 	src/helper_function/helper_function.h
 	src/helper_function/helper_function.cpp
-	src/shaders/LightCubeShader_1.fs
-	src/shaders/LightCubeShader_1.vs
+	
+	src/graphics/LineBatch.h
+	src/graphics/LineBatch.cpp
 )
 
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
@@ -52,3 +50,6 @@ target_link_libraries(${PROJECT_NAME} glad)
 
 add_subdirectory(external/glm)
 target_link_libraries(${PROJECT_NAME} glm)
+
+
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT Hi_core)

@@ -21,6 +21,8 @@
 #include "marching_cubes/chunks.h"
 #include "graphics/marching_cube_renderer.h"
 
+#include "graphics/LineBatch.h"
+
 // all extra functions 
 
 #include "helper_function/helper_function.h"
@@ -42,6 +44,16 @@ struct Verices {
     int amount = 0;
 };
 
+int attrs[] = { 2, 4, 0 };
+
+float vertices[] = {
+    //x        y   r   g   b   a
+     0.0f,   0.01f, 1.0f, 1.0f, 1.0f, 1.0f,
+     0.0f,  -0.01f, 1.0f, 1.0f, 1.0f, 1.0f,
+
+     0.01f,   0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+    -0.01f,   0.0f, 1.0f, 1.0f, 1.0f, 1.0f
+};
 
 int main()
 {
@@ -54,8 +66,8 @@ int main()
     Shader first("../src/shaders/Shader_1.vs", "../src/shaders/Shader_1.fs");
     Shader lightCubeShader("../src/shaders/LightCubeShader_1.vs", "../src/shaders/LightCubeShader_1.fs");
     Shader for_lines("../src/shaders/ShV1.vs", "../src/shaders/ShV1.fs");
-    
-
+    Shader crosshair_shader("../res/main_crosshair_shader.vs", "../res/main_crosshair_shader.fs");
+	Shader main_voxel_box_shader("../res/main_line_shader.vs", "../res/main_line_shader.fs");
     
     first.use();
     Texture diffuseMap("../data/picturs/container_diffuse.png");
@@ -76,6 +88,8 @@ int main()
 
     Shader chunkbox_shader("../res/main_line_shader.vs", "../res/main_line_shader.fs");
         
+    Mesh crosshairMesh(vertices, 4, attrs);
+
     // positions of the point lights
     glm::vec3 pointLightPositions[] = {
         glm::vec3(0.7f,  0.2f,  2.0f),
@@ -88,10 +102,10 @@ int main()
       
 
     Chunks* chunks = new Chunks(4, 4, 4);
-    Mesh** meshes = new Mesh * [chunks->volume];
+    Mesh** chunksMesh = new Mesh * [chunks->volume];
     MarchingCubeRenderer renderer(5 * CHUNK_VOL, attrs);
     for (size_t i = 0; i < chunks->volume; i++) {
-        meshes[i] = renderer.render(chunks->chunks[i]);
+        chunksMesh[i] = renderer.render(chunks->chunks[i]);
     }
 
 
@@ -107,6 +121,8 @@ int main()
     float camY = 0.0f;
 
     glm::vec3 lightPos;
+
+	LineBatch* voxel_box = new LineBatch(24);
 
     while (!Window::isShouldClose()) 
     {
@@ -190,9 +206,65 @@ int main()
                 extra = glm::rotate(extra, glm::radians(0.f), glm::vec3(0.5f, 0.0f, -3.0f));
             }
             first.setMat4("extra", extra);
+            int texture_index
+            //ray cast
+            {
+                vec3 end;       //end vector
+                vec3 norm;      //normal vector(for object which is wached)
+                vec3 iend;                                                  //ray langh
+                Marching_cubes* vox = chunks->rayCast(camera->position, camera->front, 10.0f, end, iend);
+                if (vox != nullptr) {
+                    voxel_box->box(iend.x + 0.5f, iend.y + 0.5f, iend.z + 0.5f, 1.005f, 1.005f, 1.005f, 0, 0, 0, 0.5f);
 
+                    if (Events::jclicked(GLFW_MOUSE_BUTTON_1)) {
+                        int x = (int)iend.x;
+                        int y = (int)iend.y;
+                        int z = (int)iend.z;
+                        chunks->set(x, y, z, 0, 0);
+                    }
+                    if (Events::jclicked(GLFW_MOUSE_BUTTON_2)) {
+                        int x = (int)(iend.x) + (int)(norm.x);
+                        int y = (int)(iend.y) + (int)(norm.y);
+                        int z = (int)(iend.z) + (int)(norm.z);
+                        chunks->set(x, y, z, 1, texture_index);
+                    }
 
+                }
+            }
 
+            Chunk* closes[27];
+            for (size_t i = 0; i < chunks->volume; i++)
+            {
+                Chunk* chunk = chunks->chunks[i];
+                if (!chunk->modified) continue;
+                chunk->modified = false;
+
+                if (chunksMesh[i] != nullptr)
+                    delete chunksMesh[i];
+
+                for (int i = 0; i < 27; i++)
+                {
+                    closes[i] = nullptr;
+                }
+                for (int j = 0; j < chunks->volume; j++)
+                {
+                    Chunk* other = chunks->chunks[j];
+
+                    int ox = other->xpos - chunks->chunks[i]->xpos;
+                    int oy = other->ypos - chunks->chunks[i]->ypos;
+                    int oz = other->zpos - chunks->chunks[i]->zpos;
+
+                    if (abs(ox) > 1 || abs(oy) > 1 || abs(oz) > 1) continue;
+
+                    ox += 1;
+                    oy += 1;
+                    oz += 1;
+                    closes[(oy * 3 + oz) * 3 + ox] = other;
+                }
+                Mesh* mesh = renderer.render(chunk);
+                chunksMesh[i] = mesh;
+                
+            }
 
             first.use();
 
@@ -289,21 +361,28 @@ int main()
 
                     for (int i = 0; i < chunks->volume; i++) {
                         Chunk* chunk = chunks->chunks[i];
-                        Mesh* mesh = meshes[i];
+                        Mesh* mesh = chunksMesh[i];
 
                         first.use();
                         model228 = mat4(1.0f);
                         model228 = glm::translate(model228, vec3(chunk->xpos * CHUNK_W, chunk->ypos * CHUNK_H, chunk->zpos * CHUNK_D));
                         first.setMat4("model", model228);
-                        meshes[i]->draw(GL_TRIANGLES);
+                        chunksMesh[i]->draw(GL_TRIANGLES);
 
                         chunkbox_shader.use();
                         chunkbox_shader.setMat4("projection", projection); // note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
                         chunkbox_shader.setMat4("view", view);
                         chunks->chunks[i]->ChunkBoxDrawer(chunkbox_shader);
+						
+						main_voxel_box_shader.use();
+                        main_voxel_box_shader.setMat4("projection", camera->getProjection());
+                        main_voxel_box_shader.setMat4("view", camera->getView());
+                        main_voxel_box_shader.setMat4("model", glm::mat4(1.f));
+                        voxel_box->render();
                     }
 
-
+                    crosshair_shader.use();
+                    crosshairMesh.draw(GL_LINES);
                 }
             }
         }
