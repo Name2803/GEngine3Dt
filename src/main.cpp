@@ -206,7 +206,7 @@ int main()
                 extra = glm::rotate(extra, glm::radians(0.f), glm::vec3(0.5f, 0.0f, -3.0f));
             }
             first.setMat4("extra", extra);
-            int texture_index
+            int texture_index;
             //ray cast
             {
                 vec3 end;       //end vector
