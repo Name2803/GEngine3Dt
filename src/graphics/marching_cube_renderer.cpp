@@ -10,16 +10,28 @@
 
 #include <iostream>
 
-void calculateTriangleNormal(glm::vec3 vertex1, glm::vec3 vertex2, glm::vec3 vertex3, float* vert) {
-	glm::vec3 vector1 = vertex2 - vertex1;
-	glm::vec3 vector2 = vertex3 - vertex1;
+void calculateTriangleNormal(float* triangle_normal/*glm::vec3 vertex1, glm::vec3 vertex2, glm::vec3 vertex3, float* vert*/) {
+
+	glm::vec3 point1(*triangle_normal, *(triangle_normal + 1), *(triangle_normal + 2));
+	glm::vec3 point2(*(triangle_normal + 8), *(triangle_normal + 9), *(triangle_normal + 10));
+	glm::vec3 point3(*(triangle_normal + 16), *(triangle_normal + 17), *(triangle_normal + 18));
+
+
+	glm::vec3 vector1 = point2 - point1;
+	glm::vec3 vector2 = point3 - point1;
 
 	glm::vec3 normal = glm::cross(vector1, vector2);
 	normal = glm::normalize(normal);
 
-	vert[-8 - 10] = 1; vert[-7 - 10] = 1; vert[-6 - 10] = 1;
-	vert[-5 - 5] = 1; vert[-4 - 5] = 1; vert[-3 - 5] = 1;
-	vert[-2] = 1; vert[-1] = 1; vert[0] = 1;
+	triangle_normal[5] = normal.x;
+	triangle_normal[6] = normal.y;
+	triangle_normal[7] = normal.z;
+	triangle_normal[13] = normal.x;
+	triangle_normal[14] = normal.y;
+	triangle_normal[15] = normal.z;
+	triangle_normal[21] = normal.x;
+	triangle_normal[22] = normal.y;
+	triangle_normal[23] = normal.z;
 }
 
 void calculateTriangleTextureCoords(float* p1, float* p2, float* p3) {
@@ -57,10 +69,14 @@ Mesh* MarchingCubeRenderer::render(const Chunk* chunk) {
 							*vertices = vertices_mc[*verts * 3 + k] + y;
 						if (k == 2)
 							*vertices = vertices_mc[*verts * 3 + k] + z;
+						
+						// texture coords
 						if (k == 3)
 							*vertices = vertices_mc[*verts * 3 + 0];
 						if (k == 4)
 							*vertices = vertices_mc[*verts * 3 + 2];
+						
+						//normal vector
 						if (k == 5)
 							*vertices = 1.0f;
 						if (k == 6)
@@ -68,15 +84,16 @@ Mesh* MarchingCubeRenderer::render(const Chunk* chunk) {
 						if (k == 7)
 							*vertices = 1.0f;
 					}
-					/*vertices += 5;
 					if (j % 3 == 0) {
-						points_quantity++;
-						calculateTriangleNormal(glm::vec3(vertices[-8 -15], vertices[-7 - 15], vertices[-6 - 15]),
+						float* triangle_normal = vertices - 24;
+						calculateTriangleNormal(triangle_normal);
+						//points_quantity++;
+						/*calculateTriangleNormal(glm::vec3(vertices[-8 -15], vertices[-7 - 15], vertices[-6 - 15]),
 												glm::vec3(vertices[-5 - 10], vertices[-4 - 10], vertices[-3 - 10]),
 												glm::vec3(vertices[-2 - 5], vertices[-1 - 5], vertices[0 - 5]),
-												vertices);
-						calculateTriangleTextureCoords(&vertices[-6 - 15], &vertices[-3 - 10], &vertices[0 - 5]);
-					}*/
+												vertices);*/
+						//calculateTriangleTextureCoords(&vertices[-6 - 15], &vertices[-3 - 10], &vertices[0 - 5]);
+					}
 				}
 			}
 		}

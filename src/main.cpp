@@ -101,7 +101,7 @@ int main()
     int attrs[] = { 3, 2, 3, 0 };
       
 
-    Chunks* chunks = new Chunks(4, 4, 4);
+    Chunks* chunks = new Chunks(4,4,4);
     Mesh** chunksMesh = new Mesh * [chunks->volume];
     MarchingCubeRenderer renderer(5 * CHUNK_VOL, attrs);
     for (size_t i = 0; i < chunks->volume; i++) {
