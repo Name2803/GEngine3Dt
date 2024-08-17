@@ -44,12 +44,14 @@ Chunk::Chunk(int xpos, int ypos, int zpos, Chunks* chunks, int temp):
 				int id = glm::perlin(glm::vec3(real_x * 0.0325f, real_y * 0.0625f, real_z * 0.0325f)) > 0.1f;
 				if (!id) { continue; }
 				//--------------------------------------------------------------------------- v.1.2
+				//chunks->chunks[chunks->w * (chunks->d * ypos + zpos) + xpos]->marching_cubes[CHUNK_W * (CHUNK_D * y + z) + x].textureID = 1;
 				if (y == 0)
 				{
 					if (z == 0)
 					{
 						if (x == 0)
 						{
+
 							marching_cubes[0].mc_ind |= 1;
 							//close the void between chunks=================begin======zero=point
 							if (ypos == 0)

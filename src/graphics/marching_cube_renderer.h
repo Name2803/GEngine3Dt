@@ -15,6 +15,9 @@ public:
 
 	Mesh* render(const Chunk* chunk);
 
+    void calculateTriangleNormal(float* triangle_normal);
+    void calculateTriangleTextureCoords(float* triangle_normal, int texture_index);
+
 private:
 	int triTable[256][16]{
 	{-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},

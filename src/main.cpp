@@ -70,8 +70,8 @@ int main()
 	Shader main_voxel_box_shader("../res/main_line_shader.vs", "../res/main_line_shader.fs");
     
     first.use();
-    Texture diffuseMap("../data/picturs/container_diffuse.png");
-    Texture specularMap("../data/picturs/lighting_maps_specular_color.png");
+    Texture diffuseMap("../res/texture_map.png");
+    Texture specularMap("../res/texture_map.png");
     Texture emissionMap("../data/picturs/matrix.jpg");
     Texture spotlightLightMap("../data/picturs/batman_spotlight.jpg");
     first.setInt("material.diffuse", 0);

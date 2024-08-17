@@ -1,0 +1,1 @@
+1. working on triangleTextureCoordsCalculatorFunction function(didn't finished yet)

@@ -10,8 +10,8 @@
 
 #include <iostream>
 
-void calculateTriangleNormal(float* triangle_normal/*glm::vec3 vertex1, glm::vec3 vertex2, glm::vec3 vertex3, float* vert*/) {
-
+void MarchingCubeRenderer::calculateTriangleNormal(float* triangle_normal)
+{
 	glm::vec3 point1(*triangle_normal, *(triangle_normal + 1), *(triangle_normal + 2));
 	glm::vec3 point2(*(triangle_normal + 8), *(triangle_normal + 9), *(triangle_normal + 10));
 	glm::vec3 point3(*(triangle_normal + 16), *(triangle_normal + 17), *(triangle_normal + 18));
@@ -34,10 +34,49 @@ void calculateTriangleNormal(float* triangle_normal/*glm::vec3 vertex1, glm::vec
 	triangle_normal[23] = normal.z;
 }
 
-void calculateTriangleTextureCoords(float* p1, float* p2, float* p3) {
-	*p1 = 0.0f; p1++; *p1 = 0.0f;
-	*p2 = 0.0f; p2++; *p2 = 1.0f;
-	*p3 = 1.0f; p3++; *p3 = 1.0f;
+void MarchingCubeRenderer::calculateTriangleTextureCoords(float* triangle_normal, int texture_index)
+{
+	float uvsize = 1.0f / 16.0f;
+	float u1 = (texture_index % 16) * uvsize;
+	float v1 = 1 - ((1 + texture_index / 16) * uvsize);
+	float u2 = u1 + uvsize;
+	float v2 = v1 + uvsize;
+	
+	triangle_normal[3] = triangle_normal[0] * u2;
+	triangle_normal[4] = triangle_normal[2] * v1;
+	triangle_normal[11] = triangle_normal[8] * u1;
+	triangle_normal[12] = triangle_normal[10] * v2;
+	triangle_normal[19] = triangle_normal[16] * u1;
+	triangle_normal[20] = triangle_normal[18] * v1;
+
+	if (triangle_normal[6] == 1 || triangle_normal[6] == -1)
+	{
+		triangle_normal[3] = triangle_normal[0] * u2;
+		triangle_normal[4] = triangle_normal[2] * v2;
+		triangle_normal[11] = triangle_normal[8] * u2;
+		triangle_normal[12] = triangle_normal[10] * v2;
+		triangle_normal[19] = triangle_normal[16] * u2;
+		triangle_normal[20] = triangle_normal[18] * v2;
+	}
+	if (triangle_normal[5] == 1 || triangle_normal[5] == -1)
+	{
+		triangle_normal[3] = triangle_normal[1] * u2;
+		triangle_normal[4] = triangle_normal[2] * v2;
+		triangle_normal[11] = triangle_normal[9] * u2;
+		triangle_normal[12] = triangle_normal[10] * v2;
+		triangle_normal[19] = triangle_normal[17] * u2;
+		triangle_normal[20] = triangle_normal[18] * v2;
+	}
+	if (triangle_normal[7] == 1 || triangle_normal[7] == -1)
+	{
+		triangle_normal[3] = triangle_normal[0] * u2;
+		triangle_normal[4] = triangle_normal[1] * v2;
+		triangle_normal[11] = triangle_normal[8] * u2;
+		triangle_normal[12] = triangle_normal[9] * v2;
+		triangle_normal[19] = triangle_normal[16] * u2;
+		triangle_normal[20] = triangle_normal[17] * v2;
+	}
+	
 }
 
 MarchingCubeRenderer::MarchingCubeRenderer(size_t capacity, int* artts):
@@ -48,21 +87,28 @@ MarchingCubeRenderer::MarchingCubeRenderer(size_t capacity, int* artts):
 	buffer = new float[capacity];
 }
 
-MarchingCubeRenderer::~MarchingCubeRenderer() {
+MarchingCubeRenderer::~MarchingCubeRenderer() 
+{
 	delete[] buffer;
 }
 
-Mesh* MarchingCubeRenderer::render(const Chunk* chunk) {
+Mesh* MarchingCubeRenderer::render(const Chunk* chunk) 
+{
 	float* vertices = buffer;
 	int points_quantity = 0;
 
-	for (int y = 0; y < CHUNK_H; y++) {
-		for (int z = 0; z < CHUNK_D; z++) {
-			for (int x = 0; x < CHUNK_W; x++) {
+	for (int y = 0; y < CHUNK_H; y++) 
+	{
+		for (int z = 0; z < CHUNK_D; z++) 
+		{
+			for (int x = 0; x < CHUNK_W; x++) 
+			{
 				int j = 1;
-				for (int* verts = &triTable[chunk->marching_cubes[(y * CHUNK_D + z) * CHUNK_W + x].mc_ind][0]; *verts >= 0; j++, verts++) {
+				for (int* verts = &triTable[chunk->marching_cubes[(y * CHUNK_D + z) * CHUNK_W + x].mc_ind][0]; *verts >= 0; j++, verts++) 
+				{
 					points_quantity++;
-					for (int k = 0; k < 8; k++, vertices++) {
+					for (int k = 0; k < 8; k++, vertices++)
+					{
 						if (k == 0)
 							*vertices = vertices_mc[*verts * 3 + k] + x;
 						if (k == 1)
@@ -72,9 +118,9 @@ Mesh* MarchingCubeRenderer::render(const Chunk* chunk) {
 						
 						// texture coords
 						if (k == 3)
-							*vertices = vertices_mc[*verts * 3 + 0];
+							*vertices = 0;
 						if (k == 4)
-							*vertices = vertices_mc[*verts * 3 + 2];
+							*vertices = 0;
 						
 						//normal vector
 						if (k == 5)
@@ -84,15 +130,11 @@ Mesh* MarchingCubeRenderer::render(const Chunk* chunk) {
 						if (k == 7)
 							*vertices = 1.0f;
 					}
-					if (j % 3 == 0) {
+					if (j % 3 == 0) 
+					{
 						float* triangle_normal = vertices - 24;
 						calculateTriangleNormal(triangle_normal);
-						//points_quantity++;
-						/*calculateTriangleNormal(glm::vec3(vertices[-8 -15], vertices[-7 - 15], vertices[-6 - 15]),
-												glm::vec3(vertices[-5 - 10], vertices[-4 - 10], vertices[-3 - 10]),
-												glm::vec3(vertices[-2 - 5], vertices[-1 - 5], vertices[0 - 5]),
-												vertices);*/
-						//calculateTriangleTextureCoords(&vertices[-6 - 15], &vertices[-3 - 10], &vertices[0 - 5]);
+						calculateTriangleTextureCoords(triangle_normal, chunk->marching_cubes[CHUNK_W * (CHUNK_D * y + z) + x].textureID);
 					}
 				}
 			}
