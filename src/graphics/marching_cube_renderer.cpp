@@ -42,39 +42,39 @@ void MarchingCubeRenderer::calculateTriangleTextureCoords(float* triangle_normal
 	float u2 = u1 + uvsize;
 	float v2 = v1 + uvsize;
 	
-	triangle_normal[3] = triangle_normal[0] * u2;
-	triangle_normal[4] = triangle_normal[2] * v1;
-	triangle_normal[11] = triangle_normal[8] * u1;
-	triangle_normal[12] = triangle_normal[10] * v2;
-	triangle_normal[19] = triangle_normal[16] * u1;
-	triangle_normal[20] = triangle_normal[18] * v1;
+	triangle_normal[3] = triangle_normal[0] / 16 + u1;
+	triangle_normal[4] = triangle_normal[2] / 16 + v1;
+	triangle_normal[11] = triangle_normal[8] / 16 + u1;
+	triangle_normal[12] = triangle_normal[10] / 16 + v1;
+	triangle_normal[19] = triangle_normal[16] / 16 + u1;
+	triangle_normal[20] = triangle_normal[18] / 16 + v1;
 
 	if (triangle_normal[6] == 1 || triangle_normal[6] == -1)
 	{
-		triangle_normal[3] = triangle_normal[0] * u2;
-		triangle_normal[4] = triangle_normal[2] * v2;
-		triangle_normal[11] = triangle_normal[8] * u2;
-		triangle_normal[12] = triangle_normal[10] * v2;
-		triangle_normal[19] = triangle_normal[16] * u2;
-		triangle_normal[20] = triangle_normal[18] * v2;
+		triangle_normal[3] = triangle_normal[0] / 16 + u1;
+		triangle_normal[4] = triangle_normal[2] / 16 + v1;
+		triangle_normal[11] = triangle_normal[8] / 16 + u1;
+		triangle_normal[12] = triangle_normal[10] / 16 + v1;
+		triangle_normal[19] = triangle_normal[16] / 16 + u1;
+		triangle_normal[20] = triangle_normal[18] / 16 + v1;
 	}
 	if (triangle_normal[5] == 1 || triangle_normal[5] == -1)
 	{
-		triangle_normal[3] = triangle_normal[1] * u2;
-		triangle_normal[4] = triangle_normal[2] * v2;
-		triangle_normal[11] = triangle_normal[9] * u2;
-		triangle_normal[12] = triangle_normal[10] * v2;
-		triangle_normal[19] = triangle_normal[17] * u2;
-		triangle_normal[20] = triangle_normal[18] * v2;
+		triangle_normal[3] = triangle_normal[1] / 16 + u1;
+		triangle_normal[4] = triangle_normal[2] / 16 + v1;
+		triangle_normal[11] = triangle_normal[9] / 16 + u1;
+		triangle_normal[12] = triangle_normal[10] / 16 + v1;
+		triangle_normal[19] = triangle_normal[17] / 16 + u1;
+		triangle_normal[20] = triangle_normal[18] / 16 + v1;
 	}
 	if (triangle_normal[7] == 1 || triangle_normal[7] == -1)
 	{
-		triangle_normal[3] = triangle_normal[0] * u2;
-		triangle_normal[4] = triangle_normal[1] * v2;
-		triangle_normal[11] = triangle_normal[8] * u2;
-		triangle_normal[12] = triangle_normal[9] * v2;
-		triangle_normal[19] = triangle_normal[16] * u2;
-		triangle_normal[20] = triangle_normal[17] * v2;
+		triangle_normal[3] = triangle_normal[0] / 16 + u1;
+		triangle_normal[4] = triangle_normal[1] / 16 + v1;
+		triangle_normal[11] = triangle_normal[8] / 16 + u1;
+		triangle_normal[12] = triangle_normal[9] / 16 + v1;
+		triangle_normal[19] = triangle_normal[16] / 16 + u1;
+		triangle_normal[20] = triangle_normal[17] / 16 + v1;
 	}
 	
 }

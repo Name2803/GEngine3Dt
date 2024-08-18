@@ -23,20 +23,6 @@ Chunk::Chunk(int xpos, int ypos, int zpos, Chunks* chunks, int temp):
 		for (int z = 0; z < CHUNK_D; z++) {
 			for (int x = 0; x < CHUNK_W; x++) {
 				
-				
-				
-				/*if (x + (CHUNK_W * z) + CHUNK_W * CHUNK_D * y < 256)
-					marching_cubes[x + (CHUNK_W * z) + CHUNK_W * CHUNK_D * y].mc_ind = x + (CHUNK_W * z) + CHUNK_W * CHUNK_D * y;
-				else
-					if(y == 1)
-						if(z == 0)
-							marching_cubes[x + (CHUNK_W * z) + CHUNK_W * CHUNK_D * y].mc_ind = 0;
-						else
-							marching_cubes[x + (CHUNK_W * z) + CHUNK_W * CHUNK_D * y].mc_ind = 15;
-					else
-						marching_cubes[x + (CHUNK_W * z) + CHUNK_W * CHUNK_D * y].mc_ind = 0;
-				continue;*/
-				
 				int real_x = x + xpos * CHUNK_W;
 				int real_z = z + zpos * CHUNK_D;
 				int real_y = y + ypos * CHUNK_H;
@@ -44,7 +30,7 @@ Chunk::Chunk(int xpos, int ypos, int zpos, Chunks* chunks, int temp):
 				int id = glm::perlin(glm::vec3(real_x * 0.0325f, real_y * 0.0625f, real_z * 0.0325f)) > 0.1f;
 				if (!id) { continue; }
 				//--------------------------------------------------------------------------- v.1.2
-				//chunks->chunks[chunks->w * (chunks->d * ypos + zpos) + xpos]->marching_cubes[CHUNK_W * (CHUNK_D * y + z) + x].textureID = 1;
+				marching_cubes[CHUNK_W * (CHUNK_D * y + z) + x].textureID = 2;
 				if (y == 0)
 				{
 					if (z == 0)
@@ -481,10 +467,9 @@ Chunk::Chunk(int xpos, int ypos, int zpos, Chunks* chunks, int temp):
 				//---------------------------------------------------------------------------
 				
 
-				if (!marching_cubes[CHUNK_W * (CHUNK_D * y + z) + x].mc_ind)
-				{
-					marching_cubes[CHUNK_W * (CHUNK_D * y + z) + x].textureID = 1;
-				}
+				
+					//marching_cubes[CHUNK_W * (CHUNK_D * y + z) + x].textureID = 2;
+				
 			}
 		}
 	}
