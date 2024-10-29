@@ -38,43 +38,41 @@ void MarchingCubeRenderer::calculateTriangleTextureCoords(float* triangle_normal
 {
 	float uvsize = 1.0f / 16.0f;
 	float u1 = (texture_index % 16) * uvsize;
-	float v1 = 1 - ((1 + texture_index / 16) * uvsize);
-	float u2 = u1 + uvsize;
-	float v2 = v1 + uvsize;
+	float v1 = ((texture_index / 16) * uvsize);
 	
-	triangle_normal[3] = triangle_normal[0] / 16 + u1;
-	triangle_normal[4] = triangle_normal[2] / 16 + v1;
-	triangle_normal[11] = triangle_normal[8] / 16 + u1;
-	triangle_normal[12] = triangle_normal[10] / 16 + v1;
-	triangle_normal[19] = triangle_normal[16] / 16 + u1;
-	triangle_normal[20] = triangle_normal[18] / 16 + v1;
+	triangle_normal[3] = triangle_normal[0] / 16.f + u1;
+	triangle_normal[4] = triangle_normal[2] / 16.f + v1;
+	triangle_normal[11] = triangle_normal[8] / 16.f + u1;
+	triangle_normal[12] = triangle_normal[10] / 16.f + v1;
+	triangle_normal[19] = triangle_normal[16] / 16.f + u1;
+	triangle_normal[20] = triangle_normal[18] / 16.f + v1;
 
 	if (triangle_normal[6] == 1 || triangle_normal[6] == -1)
 	{
-		triangle_normal[3] = triangle_normal[0] / 16 + u1;
-		triangle_normal[4] = triangle_normal[2] / 16 + v1;
-		triangle_normal[11] = triangle_normal[8] / 16 + u1;
-		triangle_normal[12] = triangle_normal[10] / 16 + v1;
-		triangle_normal[19] = triangle_normal[16] / 16 + u1;
-		triangle_normal[20] = triangle_normal[18] / 16 + v1;
+		triangle_normal[3] = triangle_normal[0] / 16.f + u1;
+		triangle_normal[4] = triangle_normal[2] / 16.f + v1;
+		triangle_normal[11] = triangle_normal[8] / 16.f + u1;
+		triangle_normal[12] = triangle_normal[10] / 16.f + v1;
+		triangle_normal[19] = triangle_normal[16] / 16.f + u1;
+		triangle_normal[20] = triangle_normal[18] / 16.f + v1;
 	}
 	if (triangle_normal[5] == 1 || triangle_normal[5] == -1)
 	{
-		triangle_normal[3] = triangle_normal[1] / 16 + u1;
-		triangle_normal[4] = triangle_normal[2] / 16 + v1;
-		triangle_normal[11] = triangle_normal[9] / 16 + u1;
-		triangle_normal[12] = triangle_normal[10] / 16 + v1;
-		triangle_normal[19] = triangle_normal[17] / 16 + u1;
-		triangle_normal[20] = triangle_normal[18] / 16 + v1;
+		triangle_normal[3] = triangle_normal[1] / 16.f + u1;
+		triangle_normal[4] = triangle_normal[2] / 16.f + v1;
+		triangle_normal[11] = triangle_normal[9] / 16.f + u1;
+		triangle_normal[12] = triangle_normal[10] / 16.f + v1;
+		triangle_normal[19] = triangle_normal[17] / 16.f + u1;
+		triangle_normal[20] = triangle_normal[18] / 16.f + v1;
 	}
 	if (triangle_normal[7] == 1 || triangle_normal[7] == -1)
 	{
-		triangle_normal[3] = triangle_normal[0] / 16 + u1;
-		triangle_normal[4] = triangle_normal[1] / 16 + v1;
-		triangle_normal[11] = triangle_normal[8] / 16 + u1;
-		triangle_normal[12] = triangle_normal[9] / 16 + v1;
-		triangle_normal[19] = triangle_normal[16] / 16 + u1;
-		triangle_normal[20] = triangle_normal[17] / 16 + v1;
+		triangle_normal[3] = triangle_normal[0] / 16.f + u1;
+		triangle_normal[4] = triangle_normal[1] / 16.f + v1;
+		triangle_normal[11] = triangle_normal[8] / 16.f + u1;
+		triangle_normal[12] = triangle_normal[9] / 16.f + v1;
+		triangle_normal[19] = triangle_normal[16] / 16.f + u1;
+		triangle_normal[20] = triangle_normal[17] / 16.f + v1;
 	}
 	
 }
@@ -134,7 +132,46 @@ Mesh* MarchingCubeRenderer::render(const Chunk* chunk)
 					{
 						float* triangle_normal = vertices - 24;
 						calculateTriangleNormal(triangle_normal);
-						calculateTriangleTextureCoords(triangle_normal, chunk->marching_cubes[CHUNK_W * (CHUNK_D * y + z) + x].textureID);
+						/*calculateTriangleTextureCoords(triangle_normal, 254);*/
+						int texture_index = chunk->marching_cubes[(y * CHUNK_D + z) * CHUNK_W + x].textureID;
+						float uvsize = 1.0f / 16.0f;
+						float u1 = (texture_index % 16) * uvsize;
+						float v1 = 1 - ((1 + texture_index / 16) * uvsize);
+
+						triangle_normal[3] = (triangle_normal[0] - x) / 16.f + u1;
+						triangle_normal[4] = (triangle_normal[2] - z) / 16.f + v1;
+						triangle_normal[11] = (triangle_normal[8] - x) / 16.f + u1;
+						triangle_normal[12] = (triangle_normal[10] - z) / 16.f + v1;
+						triangle_normal[19] = (triangle_normal[16] - x) / 16.f + u1;
+						triangle_normal[20] = (triangle_normal[18] - z) / 16.f + v1;
+
+						if (triangle_normal[6] == 1 || triangle_normal[6] == -1)
+						{
+							triangle_normal[3] = (triangle_normal[0] - x) / 16.f + u1;
+							triangle_normal[4] = (triangle_normal[2] - z) / 16.f + v1;
+							triangle_normal[11] = (triangle_normal[8] - x) / 16.f + u1;
+							triangle_normal[12] = (triangle_normal[10] - z) / 16.f + v1;
+							triangle_normal[19] = (triangle_normal[16] - x) / 16.f + u1;
+							triangle_normal[20] = (triangle_normal[18] - z) / 16.f + v1;
+						}
+						if (triangle_normal[5] == 1 || triangle_normal[5] == -1)
+						{
+							triangle_normal[3] = (triangle_normal[1] - y) / 16.f + u1;
+							triangle_normal[4] = (triangle_normal[2] - z) / 16.f + v1;
+							triangle_normal[11] = (triangle_normal[9] - y) / 16.f + u1;
+							triangle_normal[12] = (triangle_normal[10] - z) / 16.f + v1;
+							triangle_normal[19] = (triangle_normal[17] - y) / 16.f + u1;
+							triangle_normal[20] = (triangle_normal[18] - z) / 16.f + v1;
+						}
+						if (triangle_normal[7] == 1 || triangle_normal[7] == -1)
+						{
+							triangle_normal[3] = (triangle_normal[0] - x) / 16.f + u1;
+							triangle_normal[4] = (triangle_normal[1] - y) / 16.f + v1;
+							triangle_normal[11] = (triangle_normal[8] - x) / 16.f + u1;
+							triangle_normal[12] = (triangle_normal[9] - y) / 16.f + v1;
+							triangle_normal[19] = (triangle_normal[16] - x) / 16.f + u1;
+							triangle_normal[20] = (triangle_normal[17] - y) / 16.f + v1;
+						}
 					}
 				}
 			}
