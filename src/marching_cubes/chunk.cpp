@@ -3,7 +3,7 @@
 #include "marching_cubes.h"
 #include "chunks.h"
 
-#include "../graphics/ShaderCl.h"
+#include "../graphics/shader.h"
 #include "../mesh/Mesh.h"
 
 #include <math.h>
@@ -15,7 +15,7 @@ Chunk::Chunk(int xpos, int ypos, int zpos, Chunks* chunks, int temp):
 	xpos(xpos), ypos(ypos), zpos(zpos)
 {
 
-	shouldToDraw = false;
+	should_to_draw = false;
 	/*std::cout << xpos << "\t" << ypos << "\t" << zpos << "\n";*/
 	int Y;
 	marching_cubes = new Marching_cubes[CHUNK_D * CHUNK_H * CHUNK_W];
@@ -481,9 +481,9 @@ Chunk::~Chunk() {
 
 
 
-int Chunk::ChunkBoxDrawer(Shader& chunkBoxShader)
+int Chunk::ChunkBoxDrawer(Shader& chunk_box_shader)
 {
-	if (shouldToDraw)
+	if (should_to_draw)
 	{
 		int arts[] = { 3, 3, 0 };
 		Mesh chunkBox(l_cube_vert, 24, arts);
@@ -491,7 +491,7 @@ int Chunk::ChunkBoxDrawer(Shader& chunkBoxShader)
 		model = glm::mat4(1.f);
 		model = scale(model, glm::vec3(CHUNK_W, CHUNK_H, CHUNK_D));
 		model = translate(model, glm::vec3(xpos, ypos, zpos));
-		chunkBoxShader.setMat4("model", model);
+		chunk_box_shader.setMat4("model", model);
 		chunkBox.draw(GL_LINES);
 	}
 

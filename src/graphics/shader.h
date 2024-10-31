@@ -16,7 +16,7 @@ public:
 	//the program ID
 	unsigned int ID;
 
-	Shader(const char* vertexPath, const char* fragmentPath);
+	Shader(const char* vertex_path, const char* fragment_path);
 	//use/activethe shader
 	void use() const;
 

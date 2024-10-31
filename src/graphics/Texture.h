@@ -7,7 +7,7 @@ public:
 	int width;
 	int nrChannels;
 
-	Texture(const char* texturePath);
+	Texture(const char* texture_path);
 
 	Texture() = delete;
 	//Texture(Texture) = delete;

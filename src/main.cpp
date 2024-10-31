@@ -10,18 +10,18 @@
 
 #include <Windows.h>
 
-#include "graphics/ShaderCl.h"
+#include "graphics/shader.h"
 #include "window/window.h"
-#include "window/Events.h"
-#include "window/Camera.h"
-#include "graphics/Texture.h"
-#include "mesh/Mesh.h"
+#include "window/events.h"
+#include "window/camera.h"
+#include "graphics/texture.h"
+#include "mesh/mesh.h"
 #include "marching_cubes/marching_cubes.h"
 #include "marching_cubes/chunk.h"
 #include "marching_cubes/chunks.h"
 #include "graphics/marching_cube_renderer.h"
 
-#include "graphics/LineBatch.h"
+#include "graphics/line_batch.h"
 
 // all extra functions 
 
@@ -177,7 +177,7 @@ int main()
             for (int i = 0; i < chunks->volume; i++)
             {
                 //chunks->chunks[i]->ChunkBoxDrawer();
-                chunks->chunks[i]->shouldToDraw = !chunks->chunks[i]->shouldToDraw;
+                chunks->chunks[i]->should_to_draw = !chunks->chunks[i]->should_to_draw;
             }
         }
 

@@ -9,9 +9,9 @@ Mesh::Mesh(const float* buffer, size_t vertices, const int* attrs) :
 	attrs(attrs)
 {
 
-	vertexSize = 0;
+	vertex_size = 0;
 	for (int i = 0; attrs[i]; i++) {
-		vertexSize += attrs[i];
+		vertex_size += attrs[i];
 	}
 
 	glGenVertexArrays(1, &VAO);
@@ -19,13 +19,13 @@ Mesh::Mesh(const float* buffer, size_t vertices, const int* attrs) :
 
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertexSize * vertices, buffer, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertex_size * vertices, buffer, GL_STATIC_DRAW);
 
 	// attributes
 	int offset = 0;
 	for (int i = 0; attrs[i]; i++) {
 		int size = attrs[i];
-		glVertexAttribPointer(i, size, GL_FLOAT, GL_FALSE, vertexSize * sizeof(float), (GLvoid*)(offset * sizeof(float)));
+		glVertexAttribPointer(i, size, GL_FLOAT, GL_FALSE, vertex_size * sizeof(float), (GLvoid*)(offset * sizeof(float)));
 		glEnableVertexAttribArray(i);
 		offset += size;
 	}
@@ -33,7 +33,7 @@ Mesh::Mesh(const float* buffer, size_t vertices, const int* attrs) :
 	glBindVertexArray(0);
 }
 
-Mesh::Mesh(const float* verBuffer, const float* buffer, size_t ververtices, size_t vertices, const int* attrs) 
+Mesh::Mesh(const float* ver_buffer, const float* buffer, size_t ververtices, size_t vertices, const int* attrs) 
 	: vertices(ververtices * 3)
 {
 	int vertex_size = 0;
@@ -44,12 +44,12 @@ Mesh::Mesh(const float* verBuffer, const float* buffer, size_t ververtices, size
 
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &extraVbo);
+	glGenBuffers(1, &extra_vbo);
 
 	glBindVertexArray(VAO);
 
-	glBindBuffer(GL_ARRAY_BUFFER, extraVbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * ververtices * 3, verBuffer, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, extra_vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * ververtices * 3, ver_buffer, GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
@@ -90,7 +90,7 @@ void Mesh::reload(const float* buffer, size_t vertices) {
 
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertexSize * vertices, buffer, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertex_size * vertices, buffer, GL_STATIC_DRAW);
 	this->vertices = vertices;
 	glEnableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);

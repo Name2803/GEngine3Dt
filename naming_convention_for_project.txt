@@ -1,0 +1,15 @@
+1.  CamelCase:
+
+Х ѕеременные:  firstName, lastName, age, totalValue 
+Х ‘ункции:  calculateTotal, printMessage, updateDatabase
+
+2. PascalCase:
+
+Х  лассы:  Person, Book, Database, Application
+Х ѕеречислени€ (Enums):  Colors, WeekDays, Directions
+
+3. snake_case:
+
+Х ‘айлы:  main.cpp, database_manager.cpp, utils.hpp
+Х  онстанты:  MAX_VALUE, MIN_VALUE, DATABASE_URL
+Х ћакросы:  DEBUG_MODE, ENABLE_LOGGING 

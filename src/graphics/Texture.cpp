@@ -1,4 +1,4 @@
-#include "Texture.h"
+#include "texture.h"
 
 #include <glad/glad.h>
 #include <glm/glm.hpp>
@@ -10,7 +10,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "../../external/stb_image.h"
 
-Texture::Texture(const char* texturePath) {
+Texture::Texture(const char* texture_path) {
     glGenTextures(1, &id);
     glBindTexture(GL_TEXTURE_2D, id);
     // set the texture wrapping parameters
@@ -22,7 +22,7 @@ Texture::Texture(const char* texturePath) {
     // load image, create texture and generate mipmaps
     stbi_set_flip_vertically_on_load(true); // tell stb_image.h to flip loaded texture's on the y-axis.
     // The FileSystem::getPath(...) is part of the GitHub repository so we can find files on any IDE/platform; replace it with your own image path.
-    unsigned char* data = stbi_load(texturePath, &width, &height, &nrChannels, 0);
+    unsigned char* data = stbi_load(texture_path, &width, &height, &nrChannels, 0);
     if (data)
     {
         if (nrChannels != 4)

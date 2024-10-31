@@ -20,7 +20,7 @@ public:
 	static void setShouldClose(bool flag);
 	static void swapBuffers();
 
-	static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+	static void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 
 	int getWinWidth() { return width; }
 	int getWinHeight() { return height; }

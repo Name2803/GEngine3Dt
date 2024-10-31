@@ -8,19 +8,19 @@ add_executable(${PROJECT_NAME}
 	src/main.cpp
 	src/window/window.h
 	src/window/window.cpp
-	src/window/Events.h
-	src/window/Events.cpp
-	src/window/Camera.h
-	src/window/Camera.cpp
-	src/graphics/ShaderCl.h
-	src/graphics/ShaderCl.cpp
-	src/graphics/Texture.h
-	src/graphics/Texture.cpp
+	src/window/events.h
+	src/window/events.cpp
+	src/window/camera.h
+	src/window/camera.cpp
+	src/graphics/shader.h
+	src/graphics/shader.cpp
+	src/graphics/texture.h
+	src/graphics/texture.cpp
 	src/graphics/marching_cube_renderer.h
 	src/graphics/marching_cube_renderer.cpp
 
-	src/mesh/Mesh.h
-	src/mesh/Mesh.cpp
+	src/mesh/mesh.h
+	src/mesh/mesh.cpp
 	src/marching_cubes/marching_cubes.h
 	src/marching_cubes/marching_cubes.cpp
 	src/marching_cubes/chunk.h
@@ -30,8 +30,9 @@ add_executable(${PROJECT_NAME}
 	src/helper_function/helper_function.h
 	src/helper_function/helper_function.cpp
 	
-	src/graphics/LineBatch.h
-	src/graphics/LineBatch.cpp
+	src/graphics/line_batch.h
+	src/graphics/line_batch.cpp
+	naming_convention_for_project.txt
 )
 
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)

@@ -1,7 +1,7 @@
-#include "ShaderCl.h"
+#include "shader.h"
 
 
-Shader::Shader(const char* vertexPath, const char* fragmentPath)
+Shader::Shader(const char* vertex_path, const char* fragment_path)
 {
     // 1. retrieve the vertex/fragment source code from filePath
 
@@ -15,8 +15,8 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
     try
     {
         // open files
-        vShaderFile.open(vertexPath);
-        fShaderFile.open(fragmentPath);
+        vShaderFile.open(vertex_path);
+        fShaderFile.open(fragment_path);
         std::stringstream vShaderStream, fShaderStream;
         // read file's buffer contents into streams
         vShaderStream << vShaderFile.rdbuf();
@@ -40,12 +40,12 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
     vertex = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertex, 1, &vShaderCode, NULL);
     glCompileShader(vertex);
-    checkCompileErrors(vertex, vertexPath);
+    checkCompileErrors(vertex, vertex_path);
     // fragment Shader
     fragment = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragment, 1, &fShaderCode, NULL);
     glCompileShader(fragment);
-    checkCompileErrors(fragment, fragmentPath);
+    checkCompileErrors(fragment, fragment_path);
     // shader Program
     ID = glCreateProgram();
     glAttachShader(ID, vertex);

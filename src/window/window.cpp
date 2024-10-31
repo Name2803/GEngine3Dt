@@ -27,7 +27,7 @@ int Window::initialize(int width, int height, const char* title)
         return -1;
     }
     glfwMakeContextCurrent(window);
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
 
     // glad: load all OpenGL function pointers
     // ---------------------------------------
@@ -47,7 +47,7 @@ void Window::setCursorMode(int mode) {
     glfwSetInputMode(window, GLFW_CURSOR, mode);
 }
 
-void Window::framebuffer_size_callback(GLFWwindow* window, int width, int height)
+void Window::framebufferSizeCallback(GLFWwindow* window, int width, int height)
 {
     // make sure the viewport matches the new window dimensions; note that width and 
     // height will be significantly larger than specified on retina displays.

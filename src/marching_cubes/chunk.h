@@ -15,7 +15,7 @@ public:
 	int xpos, ypos, zpos;
     int index;
     bool modified = true;
-    bool shouldToDraw;
+    bool should_to_draw;
     Marching_cubes* marching_cubes;
 
 
@@ -24,7 +24,7 @@ public:
 	Chunk( int xpos, int ypos, int zpos, Chunks* chunks, int temp);
 	~Chunk();
 
-    int ChunkBoxDrawer(Shader& chunkBoxShader);
+    int ChunkBoxDrawer(Shader& chunk_boxhader);
 
 private:
     int amount = CHUNK_VOL;
